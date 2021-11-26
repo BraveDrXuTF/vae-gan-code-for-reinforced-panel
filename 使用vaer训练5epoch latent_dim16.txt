@@ -1,0 +1,2 @@
+vae_loss: 283.2156 - kl_loss: 50.1303 - reconstruction_loss: 85.6184 - discriminator_loss: 0.3546 - refine_loss: 147.4666
+

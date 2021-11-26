@@ -1,0 +1,15 @@
+*.jpg
+logs
+gui
+gene_9000
+gene
+gene_no_random
+gene9000_no_randoms
+data_random
+data_random_new
+data_random_news
+data_random_news67
+vae_cnn_weights/*
+images/*
+*.zip
+__pycache__
