@@ -241,7 +241,7 @@ parsed_image_dataset = image_list_dataset.interleave(lambda x: tf.data.TFRecordD
                                                      cycle_length=4)
 
 
-batch_size = 128
+batch_size = 10
 batch_num = 1124
 # 原來dataset可以這樣做
 parsed_image_dataset = parsed_image_dataset.map(parse_imagestr2numpy)
@@ -584,7 +584,7 @@ VAER_GAN_instance.built = True
 # VAER_GAN_instance.load_weights(
 #     'vae_cnn_weights/modelepoch_4z2vaerGAN_Sat_Sep_25_11_34_31_2021.h5')
 
-VAER_GAN_instance.load_weights('vae_cnn_weights/modelepoch_13z2vaerGAN_Thu_Nov_25_22_11_04_2021.h5')
+VAER_GAN_instance.load_weights('vae_cnn_weights/modelepoch_50z2vaerGAN_Fri_Nov_26_19_11_10_2021.h5')
 a128batch = parsed_image_dataset.take(1)
 print(type(a128batch))
 a128batch_list = list(a128batch.as_numpy_iterator())
@@ -677,7 +677,7 @@ def test_plot(model, a128batch):
     # testresult = np.where(testresult>0.78,testresult,0)
     digit_size = 128
     row = 2
-    col = 25
+    col = 2
     figure = np.zeros((digit_size * 2 * row, digit_size * col))  # 4行10列
     for i in range(col):
         # import pdb
@@ -698,12 +698,49 @@ def test_plot(model, a128batch):
 
 def to_excel():
 
-
-    _, _, code = VAER_GAN_instance.encoder.predict(parsed_image_dataset)
+    code_list = []
+    for i in range(len(pic_list)):
+        img = Image.open(pic_list[i])
+        img = np.array(img)
+        img = -(img/255.0) + 1
+        img = img[None, :, :, 0]
+        _, _, img_code = VAER_GAN_instance.encoder.predict(img) # img_code的shape是1，16，np.array类型
+        img_code = np.squeeze(img_code) 
+        img_code = img_code.tolist()
+        # img_code.tolist()
+        # 做这些操作的目的都是让code_list能顺利转换成code:shape (9313,16)
+        code_list.append(img_code)
+    
+    # _, _, code = VAER_GAN_instance.encoder.predict(parsed_image_dataset)
+    code = np.array(code_list)
     code_df = pd.DataFrame(code)
     data_index = pic_list
     code_df.index = data_index
-    code_df.to_csv('code.csv')
+    code_df.to_excel('code.xlsx','sheet_1',float_format='%f')
+def to_excel_special():
+    special_pic_list = glob.glob('Special/*.jpg')
+    special_pic_list = sorted(special_pic_list, key=lambda info: (int(info[8:-4]), info[-4:]) )
+    list_to_excel(special_pic_list)
+def list_to_excel(pic_list):
+    code_list = []
+    for i in range(len(pic_list)):
+        img = Image.open(pic_list[i])
+        img = np.array(img)
+        img = -(img/255.0) + 1
+        img = img[None, :, :, 0]
+        _, _, img_code = VAER_GAN_instance.encoder.predict(img) # img_code的shape是1，16，np.array类型
+        img_code = np.squeeze(img_code) 
+        img_code = img_code.tolist()
+        # img_code.tolist()
+        # 做这些操作的目的都是让code_list能顺利转换成code:shape (9313,16)
+        code_list.append(img_code)
+    
+    # _, _, code = VAER_GAN_instance.encoder.predict(parsed_image_dataset)
+    code = np.array(code_list)
+    code_df = pd.DataFrame(code)
+    data_index = pic_list
+    code_df.index = data_index
+    code_df.to_excel('code_special.xlsx','sheet_1',float_format='%f')
 
 if __name__ == '__main__':
 
@@ -722,4 +759,16 @@ if __name__ == '__main__':
 
     # test_plot(VAER_GAN_instance, a128batch)  # 这一关过了
     # collect_z(check_index=0,check_num=5)
-    to_excel()
+    # test_plot(VAER_GAN_instance,a128batch)
+    # to_excel()
+    # a=[3.133805,-2.444599,0.725415,2.12828,-3.216603,-1.565976,2.288015,1.007065,3.84931,0.489287,-1.598607,-0.799177,1.553569,3.607766,-1.416075,2.568722]
+    # a=[0.944523,0.517405,1.705929,1.130903,-5.166395,-0.089059,3.144279,-1.535654,2.833469,-1.696541,-2.188113,0.465848,0.612227,2.279999,1.529394,2.096762
+    # ]
+    
+    # a = np.array(a)
+    # a = np.expand_dims(a,axis=0)
+    # # VAER_GAN_instance.generator.predict(a)
+    # plt.imshow(np.squeeze(
+    #         VAER_GAN_instance.generator.predict(a)), cmap='Greys_r')
+    # plt.savefig(time.strftime("hahaha_%a_%b_%d_%H_%M_%S_%Y", time.localtime())+'.jpg')
+    to_excel_special()
