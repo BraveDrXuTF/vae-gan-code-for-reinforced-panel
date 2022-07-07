@@ -11,3 +11,6 @@ input: 128x128x3 in tfrecord format.
 **original vae-gan paper**:
 
 [https://arxiv.org/pdf/1606.04797.pdf]
+
+# 2022/07/07
+This is the version with image dataset in `.jpg` format, you still need to transform it into `.tfrecords` format.
