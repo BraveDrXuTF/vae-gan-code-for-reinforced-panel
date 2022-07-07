@@ -13,4 +13,4 @@ input: 128x128x3 in tfrecord format.
 [https://arxiv.org/pdf/1606.04797.pdf]
 
 # 2022/07/07
-This is the version with image dataset in `.jpg` format, you still need to transform it into `.tfrecords` format.
+[This](https://github.com/xutengfei2000/VAE-GAN-for-feature-extraction) is the VAE-GAN version with image dataset in `.jpg` format, you still need to transform it into `.tfrecords` format.
